@@ -56,11 +56,13 @@ simple_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, re
 
     list(parameters = parameters, standard_deviation = standard_deviation, AIC =  AIC,
          loss_value =  loss_value, Information = Information, Sensibility = Sensibility,
-         parameters_covariance = parameters_covariance, nsample = (nrow(data)-model_order),
+         parameters_covariance = parameters_covariance, nsample = nrow(nrow(data)-model_order),
          number_of_parameters = (model_order + length(Xvar) + 2), dataMat = data)
       }
   else{
       list_values <- numeric(repeat_opt)*NA
+      print("Xvar")
+      print(Xvar)
       mat_param <- matrix(NA, ncol = model_order + length(Xvar) + 2, nrow = repeat_opt)
       for(needle_rep in 1:repeat_opt){
         parauto <- rexp(model_order)
@@ -76,10 +78,14 @@ simple_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, re
           mat_param[needle_rep, ] <- res_opt$par
         }
       }
-
-      label_var = colnames(data[, Xvar])
+      print(colnames(data))
+      label_var = colnames(data)[Xvar]
+      print("label_var")
+      print(label_var)
       parameters <- mat_param[which.min(list_values),]
       param_label = c("omega",label_var,paste0("alpha",1:model_order),"delta")
+      print("param_label")
+      print(param_label)
       loss_value <- min(list_values, na.rm = TRUE)
       matrices <- stdErrorAutoregressive(data, parameters, yvar, Xvar, ysize, model_order,  skipto)
       Information <-  matrices$Imatrix

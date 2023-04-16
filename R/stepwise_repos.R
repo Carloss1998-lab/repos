@@ -20,7 +20,7 @@ stepwise_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, 
   print("Initialization")
   res <- simple_repos(data, y = yvar, Xvar = Xvar, ysize = ysize, model_order = model_order, skipto = skipto, repeat_opt = repeat_opt,stepwise = stepwise)
   n <- nrow(data)
-  vars_in <- seq_len(length(Xvar))
+  vars_in <- Xvar
   vars_out <- integer(0)
   best_aic <- res$AIC
   # Initialisation de la barre de progression
@@ -49,10 +49,15 @@ stepwise_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, 
 
   # Fermer la barre de progression
   close(pb)
-  x_selected <- Xvar[vars_out]
-  final_var = colnames(data[, x_selected])
-  print("Final model computing...")
-  result = simple_repos(data, y = yvar, Xvar = x_selected, ysize = ysize, model_order = model_order, skipto = skipto, repeat_opt = repeat_opt,stepwise = stepwise)
-  result[["selected_variable"]] = final_var
-  return(result)
+  if(length(vars_out)>0){
+    x_selected <- Xvar[vars_out]
+    final_var = colnames(data)[x_selected]
+    print("Final model computing...")
+    result = simple_repos(data, y = yvar, Xvar = x_selected, ysize = ysize, model_order = model_order, skipto = skipto, repeat_opt = repeat_opt,stepwise = stepwise)
+    result[["selected_variable"]] = final_var
+    return(result)
+  }else{
+    return(res)
+  }
+
 }
