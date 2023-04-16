@@ -8,22 +8,21 @@ stepwise_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, 
   vars_in <- seq_len(length(Xvar))
   vars_out <- integer(0)
   best_aic <- res$AIC
-
   # Initialisation de la barre de progression
-  print("Variables selection")
 
   pb <- txtProgressBar(min = 0, max = length(vars_in), style = 3)
 
   # Boucle de sélection de variables par étape
   while (length(vars_in) > 0) {
     aics <- numeric(length(vars_in))
-    for (i in vars_in) {
+    for (i in c(1:length(vars_in))) {
       setTxtProgressBar(pb, i)
       x_in <- c(vars_out, vars_in[i])
       fit <- simple_repos(data, y = yvar, Xvar = x_in, ysize = ysize, model_order = model_order, skipto = skipto, repeat_opt = repeat_opt,stepwise = stepwise)
       aics[i] <- fit$AIC
     }
     best <- which.min(aics)
+    print(best)
     if (aics[best] < best_aic) {
       best_aic <- aics[best]
       vars_out <- c(vars_out, vars_in[best])
@@ -37,9 +36,8 @@ stepwise_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, 
   close(pb)
   x_selected <- Xvar[vars_out]
   final_var = colnames(data[, x_selected])
-  print("Final model computing...")
   result = simple_repos(data, y = yvar, Xvar = x_selected, ysize = ysize, model_order = model_order, skipto = skipto, repeat_opt = repeat_opt,stepwise = stepwise)
-  result["selected_variable"] = final_var
+  result[["selected_variable"]] = final_var
   return(result)
 }
 
