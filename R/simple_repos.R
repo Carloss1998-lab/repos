@@ -8,6 +8,7 @@
 #' @param model_order
 #' @param skipto
 #' @param repeat_opt
+#' @param stepwise
 #'
 #' @return
 #' @export
@@ -40,7 +41,9 @@ simple_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, re
     }
     close(pb)
 
+    label_var = colnames(data[, Xvar])
     parameters <- mat_param[which.min(list_values),]
+    param_label = c("omega",label_var,paste0("alpha",1:model_order),"delta")
     loss_value <- min(list_values, na.rm = TRUE)
     matrices <- stdErrorAutoregressive(data, parameters, yvar, Xvar, ysize, model_order,  skipto)
     Information <-  matrices$Imatrix
@@ -48,10 +51,12 @@ simple_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, re
     parameters_covariance <- solve(Sensibility)%*%Information%*%t(solve(Sensibility))/(nrow(data)-model_order)
     standard_deviation <- sqrt(diag(parameters_covariance))
     AIC <- 2*loss_value + 2 * (model_order + length(Xvar) + 2)
+    names(parameters) = names(standard_deviation) =param_label
+    rownames(Information) = rownames(Sensibility)=rownames(parameters_covariance) = colnames(Information) = colnames(Sensibility) = colnames(parameters_covariance) = param_label
 
     list(parameters = parameters, standard_deviation = standard_deviation, AIC =  AIC,
          loss_value =  loss_value, Information = Information, Sensibility = Sensibility,
-         parameters_covariance = parameters_covariance, nsample = nrow(nrow(data)-model_order),
+         parameters_covariance = parameters_covariance, nsample = (nrow(data)-model_order),
          number_of_parameters = (model_order + length(Xvar) + 2), dataMat = data)
       }
   else{
@@ -72,7 +77,9 @@ simple_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, re
         }
       }
 
+      label_var = colnames(data[, Xvar])
       parameters <- mat_param[which.min(list_values),]
+      param_label = c("omega",label_var,paste0("alpha",1:model_order),"delta")
       loss_value <- min(list_values, na.rm = TRUE)
       matrices <- stdErrorAutoregressive(data, parameters, yvar, Xvar, ysize, model_order,  skipto)
       Information <-  matrices$Imatrix
@@ -80,10 +87,12 @@ simple_repos <- function(data, yvar, Xvar, ysize, model_order, skipto = NULL, re
       parameters_covariance <- solve(Sensibility)%*%Information%*%t(solve(Sensibility))/(nrow(data)-model_order)
       standard_deviation <- sqrt(diag(parameters_covariance))
       AIC <- 2*loss_value + 2 * (model_order + length(Xvar) + 2)
+      names(parameters) = names(standard_deviation) =param_label
+      rownames(Information) = rownames(Sensibility)=rownames(parameters_covariance) = colnames(Information) = colnames(Sensibility) = colnames(parameters_covariance) = param_label
 
       list(parameters = parameters, standard_deviation = standard_deviation, AIC =  AIC,
            loss_value =  loss_value, Information = Information, Sensibility = Sensibility,
-           parameters_covariance = parameters_covariance, nsample = nrow(nrow(data)-model_order),
+           parameters_covariance = parameters_covariance, nsample = (nrow(data)-model_order),
            number_of_parameters = (model_order + length(Xvar) + 2), dataMat = data)
 
   }
