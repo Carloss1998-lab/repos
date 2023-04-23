@@ -4,16 +4,7 @@
 \alias{repos}
 \title{Title}
 \usage{
-repos(
-  data,
-  y,
-  exp_var,
-  size,
-  model_order = 2,
-  skipto = 10,
-  repeat_opt = 20,
-  stepwise = FALSE
-)
+repos(data, y, exp_var, size, model_order = 1, skipto = NULL, repeat_opt = 20)
 }
 \arguments{
 \item{repeat_opt}{}
